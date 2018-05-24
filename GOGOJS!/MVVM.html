@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="root">
+    <h1 data-model="title"></h1>
+    <div>
+        <div data-model="user"></div>
+        <ul data-list="todos">
+            <li data-list-item="todos">
+                <p data-class="todos:done" data-model="todos:creator"></p>
+                <p data-model="todos:date"></p>
+                <p data-model="todos:content"></p>
+                <ul data-list="todos:members">
+                    <li data-list-item="todos:members">
+                        <span data-model="todos:members:name"></span>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    var data = {
+        title: 'todo list',
+        user: 'mirone',
+        todos: [
+            {
+                creator: 'mirone',
+                content: 'write mvvm',
+                done: 'undone',
+                date: '2018-05-24',
+                members: [
+                    {
+                        name: 'tomo'
+                    },
+                    {
+                        name: 'kawase'
+                    }
+                ]
+            }
+        ]
+    };
+
+
+
+    function scan(node) {
+        if(!node.getAttribute('data-list')) {
+            for(var i = 0; i < node.children.length; i++) {
+                const _thisNode = node.children[i];
+                parseModel(node);
+                parseClass(node);
+                parseEvent(node);
+                if(_thisNode.children.length) {
+                    scan(_thisNode);
+                }
+            }
+        } else {
+            parseList(node)
+        }
+    }
+
+    // 异步事件队列
+    //event要有一个eventList,大概结构为：
+    const eventList = {
+     //   typeWriter: {
+     //       type: 'input', //事件的种类
+     //       fn: function() {
+                //事件的处理函数，函数的this代表函数绑定的DOM节点
+     //      }
+     //  }
+    };
+
+
+    function parseModel(node) {
+        //TODO:解析Model节点
+        if(node.getAttribute('data-model')) {
+            const modelName = node.getAttribute('data-model');
+            const _data = parseData(modelName, node);
+            if(node.tagName === 'INPUT') {
+                node.value = _data.data
+            } else {
+                node.innerText = _data.data
+            }
+        }
+
+    }
+    function parseClass(node) {
+        //TODO:解析className
+        if(node.getAttribute('data-class')) {
+            const className = node.getAttribute('data-class');
+            const _data = parseData(className, node);
+            if(!node.classList.contains(_data.data)) {
+                node.classList.add(_data.data)
+            } else {
+
+            }
+        }
+    }
+    function parseEvent(node) {
+        //TODO:解析事件
+        if(node.getAttribute('data-event')) {
+            const eventName = node.getAttribute('data-event');
+            node.addEventListener(eventList[eventName].type, eventList[eventName].fn.bind(node));
+        }
+
+    }
+    function parseList(node) {
+        //TODO: 解析列表
+    }
+</script>
+</body>
+</html>
