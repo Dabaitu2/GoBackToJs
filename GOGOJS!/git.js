@@ -5,3 +5,7 @@
  */
 // git 多人协作
 // git init -> git
+
+function hello() {
+    console.log("hello");
+}
