@@ -67,13 +67,47 @@
     // 异步事件队列
     //event要有一个eventList,大概结构为：
     const eventList = {
-     //   typeWriter: {
-     //       type: 'input', //事件的种类
-     //       fn: function() {
-                //事件的处理函数，函数的this代表函数绑定的DOM节点
-     //      }
-     //  }
+        typeWriter: {
+            type: 'input', //事件的种类
+            fn: function() {
+               // 事件的处理函数，函数的this代表函数绑定的DOM节点
+           }
+       }
     };
+
+    function parseEvent(node) {
+        //TODO:解析事件
+        // 只能解析预定义的事件
+        if(node.getAttribute('data-event')) {
+            const eventName = node.getAttribute('data-event');
+            node.addEventListener(eventList[eventName].type, eventList[eventName].fn.bind(node));
+        }
+
+    }
+
+    //根据在模版中的位置解析模版，这里的Path是一个数组，代表了当前数据在Model中的位置
+    function parseData(str, node) {
+        const _list = str.split(':');
+        var _data,
+            _path;
+        var p = [];
+        _list.forEach(function(key, index) {
+            if(index === 0) {
+            _data = data[key];
+            p.push(key)
+        } else {
+            _path = node.path[index-1];
+            p.push(_path);
+            _data = _data[_path][key];
+            p.push(key)
+        }
+    });
+        return {
+            path: p,
+            data: _data
+        }
+    }
+
 
 
     function parseModel(node) {
@@ -101,14 +135,7 @@
             }
         }
     }
-    function parseEvent(node) {
-        //TODO:解析事件
-        if(node.getAttribute('data-event')) {
-            const eventName = node.getAttribute('data-event');
-            node.addEventListener(eventList[eventName].type, eventList[eventName].fn.bind(node));
-        }
 
-    }
     function parseList(node) {
         //TODO: 解析列表
     }
